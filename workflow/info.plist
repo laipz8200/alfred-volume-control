@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>local.fast-volume</string>
+	<key>name</key>
+	<string>Volume Control</string>
+	<key>description</key>
+	<string>Set system volume with a keyword and a percentage.</string>
+	<key>createdby</key>
+	<string>-LAN-</string>
+	<key>version</key>
+	<string>1.1.0</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>disabled</key>
+	<false/>
+	<key>webaddress</key>
+	<string>https://github.com/laipz8200/alfred-volume-control</string>
+	<key>readme</key>
+	<string>Type your keyword followed by a whole number from 0 to 100, then press Return. The default keyword is vol.
+
+Examples: vol 25, vol 50, vol 100. vol 0 silences and mutes; positive values unmute.
+
+To change the keyword, open Alfred Preferences → Workflows → Volume Control → Configure Workflow, then edit Keyword. For example, set it to sound and use sound 50.
+
+Sets the current macOS output device. Cached NSAppleScript runs inside Alfred, avoiding a shell or a new interpreter process for each command. The compiled-script cache is enabled. No downloads, background service, or additional dependencies.
+
+In a local test, the cached action took about 45 ms in Alfred. First use and other audio devices may take longer. This measures action execution time, not keyboard-to-speaker latency.
+
+Invalid inputs return an error notification without changing volume. Successful changes are silent. Requires Alfred 5 with Powerpack. Outputs whose volume is fixed by hardware (some HDMI, USB, and digital devices) cannot be adjusted by macOS.
+
+The complete script is editable in the Run NSAppleScript action.
+
+Alfred documentation: https://www.alfredapp.com/help/workflows/actions/run-nsapplescript/
+
+Author: -LAN-
+License: MIT
+Source: https://github.com/laipz8200/alfred-volume-control
+</string>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>vol</string>
+				<key>placeholder</key>
+				<string>vol</string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Type this before the percentage, e.g. vol 50 or sound 50.</string>
+			<key>label</key>
+			<string>Keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>keyword</string>
+		</dict>
+	</array>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>uid</key>
+			<string>8C0838BF-EE18-419A-87D2-B027E19D062D</string>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>version</key>
+			<integer>1</integer>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>{var:keyword}</string>
+				<key>text</key>
+				<string>Set volume to {query}%</string>
+				<key>subtext</key>
+				<string>Enter a whole number from 0 to 100</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+		</dict>
+		<dict>
+			<key>uid</key>
+			<string>E700C689-DECD-4E5C-B343-755D89B3CBA1</string>
+			<key>type</key>
+			<string>alfred.workflow.action.applescript</string>
+			<key>version</key>
+			<integer>1</integer>
+			<key>config</key>
+			<dict>
+				<key>applescript</key>
+				<string>on alfred_script(q)
+    if q is "" or (count q) &gt; 3 then return "Enter a whole number from 0 to 100."
+    repeat with c in characters of q
+        if c is not in "0123456789" then return "Enter a whole number from 0 to 100."
+    end repeat
+    set level to q as integer
+    if level &gt; 100 then return "Enter a whole number from 0 to 100."
+    try
+        set volume output volume level output muted (level is 0)
+        return ""
+    on error messageText
+        return "Could not set volume: " &amp; messageText
+    end try
+end alfred_script
+</string>
+				<key>cachescript</key>
+				<true/>
+			</dict>
+		</dict>
+		<dict>
+			<key>uid</key>
+			<string>B4F9490E-FA49-4532-BC3F-E82AB9F83FC4</string>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>version</key>
+			<integer>1</integer>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>{const:alfred_workflow_name}</string>
+			</dict>
+		</dict>
+	</array>
+	<key>connections</key>
+	<dict>
+		<key>8C0838BF-EE18-419A-87D2-B027E19D062D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>E700C689-DECD-4E5C-B343-755D89B3CBA1</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>E700C689-DECD-4E5C-B343-755D89B3CBA1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B4F9490E-FA49-4532-BC3F-E82AB9F83FC4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>uidata</key>
+	<dict>
+		<key>8C0838BF-EE18-419A-87D2-B027E19D062D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>60</integer>
+		</dict>
+		<key>E700C689-DECD-4E5C-B343-755D89B3CBA1</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>60</integer>
+		</dict>
+		<key>B4F9490E-FA49-4532-BC3F-E82AB9F83FC4</key>
+		<dict>
+			<key>xpos</key>
+			<integer>560</integer>
+			<key>ypos</key>
+			<integer>60</integer>
+		</dict>
+	</dict>
+</dict>
+</plist>
